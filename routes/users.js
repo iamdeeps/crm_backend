@@ -12,25 +12,30 @@ mongoose.connect("mongodb+srv://Deepak:Qwerty12345@cluster0.0ghtd.mongodb.net/cr
     })
 
 /* Save user */
-router.get('/postUser', async function(req, res, next) {
+router.post('/postUser', async function(req, res, next) {
+  console.log('req.body',req.body)
   const post = new Post({
     name:req.body.name,
     email:req.body.email,
     age:req.body.age
   })
-  let saveResponse = await post.save()
-  console.log("🚀 ~ file: users.js ~ line 13 ~ router.get ~ saveResponse", saveResponse)
-  res.status(200).json({
-    message:'data sent'
+  post.save()
+  .then((savedResponse)=>{
+    res.status(200).json({
+      message:'data saved successfully',
+      data:savedResponse,
+    })
   })
 });
 
 /* Fetch user */
 router.get('/fetchUser', async function(req, res, next) {
-   
-  let fetchingData = await post.find()
-  res.status(200).json({
-    message:'data sent'
+  console.log('fetchUser',req.body)
+  Post.find()
+  .then((fetchedData)=>{
+    res.status(200).json(
+      fetchedData
+    )
   })
 });
 
