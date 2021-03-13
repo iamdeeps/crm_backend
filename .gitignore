@@ -5,6 +5,7 @@ package-lock.json
 npm-debug.log
 _ext/repo
 \.DS_Store
+env.ts
 
 dist
 www1
