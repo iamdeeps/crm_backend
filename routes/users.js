@@ -16,9 +16,9 @@ mongoose.connect(`mongodb+srv://Deepak:Qwerty12345@cluster0.0ghtd.mongodb.net/cr
       console.log('db connection failed')
     })
 
+
 /* Save user */
 router.post('/postUser', async function(req, res, next) {
-  console.log('req.body',req.body)
   const post = new Post({
     name:req.body.name,
     email:req.body.email,
@@ -35,9 +35,7 @@ router.post('/postUser', async function(req, res, next) {
 
 //google login authentication 
 router.post('/googleLogin',async function(req,res,next){
-  console.log('req.body',req.body)
   let googleLoginDetails = jwtDecoder(req.body.credential)
-  console.log("🚀 ~ file: users.js ~ line 39 ~ router.post ~ googleLoginDetails", googleLoginDetails)
   res.status(200).json({
     message:'login success',
     userData:googleLoginDetails
@@ -46,7 +44,6 @@ router.post('/googleLogin',async function(req,res,next){
 
 /* Fetch user */
 router.get('/fetchUser', async function(req, res, next) {
-  console.log('fetchUser',req.body)
   Post.find()
   .then((fetchedData)=>{
     res.status(200).json(
@@ -55,7 +52,7 @@ router.get('/fetchUser', async function(req, res, next) {
   })
 });
 
-//let userName= 
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -64,23 +61,46 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-const mailOptions = {
-  from: 'nodemailtesting1303@gmail.com',
-  to: 'nodemailtesting1303@gmail.com',
-  subject: 'Birthday Reminder Mail',
-  text: `Your Friends bday in few hours `,//`Your Friends ${friendsName} bday in ${hours} hours `
-};
-
-cron.schedule('* * * * *', ()=>{
-
-  // transporter.sendMail(mailOptions, function(error, info){
-  //   if (error) {
-  //     console.log(error);
-  //   } else {
-  //     console.log('Email sent: ' + info.response);
-  //   }
-  // });
+cron.schedule(' * * * * *',async ()=>{
+  console.log('sda')
+  let usersData = ['nodemailtesting1303@gmail.com','deepakbehki1611@gmail.com']//await dbData()
+  usersData.forEach(function(to, i , array){
+    let mailOptions = {
+      from: 'nodemailtesting1303@gmail.com',
+      subject: 'Birthday Reminder Mail',
+      text: `Your Friends bday in few hours `,//`Your Friends ${friendsName} bday in ${hours} hours `
+    };
+    mailOptions.to = to
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+  })
 })
+
+function dbData(){
+  return new Promise(async (resolve,reject)=>{
+    try {
+      let mailList = []
+      Post.find()
+      .then((fetchedData)=>{
+        for (let i = 0; i < fetchedData.length; i++) {
+          const element = fetchedData[i];
+          const todaysDate = +new Date().setHours(0,0,0,0) - 8.64e7
+          if(element.dateOfBirth && (todaysDate == element.dateOfBirth) ){
+            mailList.push(element.email)
+          }
+        }
+        resolve(mailList)
+      })
+    } catch (error) {
+        reject(error)
+    }
+  })
+}
 
 
 module.exports = router;
