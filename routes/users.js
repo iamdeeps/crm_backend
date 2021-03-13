@@ -17,7 +17,7 @@ router.post('/postUser', async function(req, res, next) {
   const post = new Post({
     name:req.body.name,
     email:req.body.email,
-    age:req.body.age
+    dateOfBirth:req.body.dateOfBirth
   })
   post.save()
   .then((savedResponse)=>{
