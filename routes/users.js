@@ -35,27 +35,23 @@ router.post('/postUser', async function(req, res, next) {
 
 /* Bulk Upload Users */
 router.post('/bulkUploadData', async function(req, res, next) {
-  console.log('req',req.body)
-  const post = [{
-    name:'sdad',
-    email:'sad',
-    dateOfBirth:'req.body.dateOfBirth'
-  },{
-    name:'req.body.name',
-    email:'req.body.email',
-    dateOfBirth:'req.body.dateOfBirth'
-  },{
-    name:"req.body.name",
-    email:'req.body.email',
-    dateOfBirth:'req.body.dateOfBirth'
-  }]
-  // Post.collection.insertMany()
-  // .then((savedResponse)=>{
-  //   res.status(200).json({
-  //     message:'data saved successfully',
-  //     data:savedResponse,
-  //   })
-  // })
+  let userData = req.body
+  const post = []
+  for (let i = 0; i < userData.length; i++) {
+    const element = userData[i];
+    post.push(new Post({
+      name:element['Name'],
+      email:element['Email'],
+      dateOfBirth:element['Date of birth']
+    }))
+  }
+  Post.collection.insertMany(post)
+  .then((savedResponse)=>{
+    res.status(200).json({
+      message:'data saved successfully',
+      userData:savedResponse.ops,
+    })
+  })
 });
 
 //google login authentication 
