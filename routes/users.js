@@ -33,6 +33,31 @@ router.post('/postUser', async function(req, res, next) {
   })
 });
 
+/* Bulk Upload Users */
+router.post('/bulkUploadData', async function(req, res, next) {
+  console.log('req',req.body)
+  const post = [{
+    name:'sdad',
+    email:'sad',
+    dateOfBirth:'req.body.dateOfBirth'
+  },{
+    name:'req.body.name',
+    email:'req.body.email',
+    dateOfBirth:'req.body.dateOfBirth'
+  },{
+    name:"req.body.name",
+    email:'req.body.email',
+    dateOfBirth:'req.body.dateOfBirth'
+  }]
+  // Post.collection.insertMany()
+  // .then((savedResponse)=>{
+  //   res.status(200).json({
+  //     message:'data saved successfully',
+  //     data:savedResponse,
+  //   })
+  // })
+});
+
 //google login authentication 
 router.post('/googleLogin',async function(req,res,next){
   let googleLoginDetails = jwtDecoder(req.body.credential)
@@ -91,8 +116,8 @@ function dbData(){
       .then((fetchedData)=>{
         for (let i = 0; i < fetchedData.length; i++) {
           const element = fetchedData[i];
-          const yesterDay = +new Date().setHours(0,0,0,0) - 8.64e7
-          if(element.dateOfBirth && (element.dateOfBirth >= yesterDay) ){
+          let check = bdayCheck(element)
+          if(check){
             mailList.push(element)
           }
         }
@@ -102,6 +127,18 @@ function dbData(){
         reject(error)
     }
   })
+}
+
+function bdayCheck(element){
+  const todayDay = new Date(+new Date().setHours(0,0,0,0) + 8.64e7).getDate()
+  const bdayDay = new Date(element.dateOfBirth).getDate()
+  const todayMonth = new Date(+new Date().setHours(0,0,0,0) + 8.64e7).getMonth()
+  const bdayMonth = new Date(+new Date().setHours(0,0,0,0) + 8.64e7).getMonth()
+  if(bdayDay == todayDay && todayMonth == bdayMonth){
+    return true
+  }else{
+    return false
+  }
 }
 
 
