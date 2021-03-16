@@ -61,16 +61,15 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-cron.schedule(' * * * * *',async ()=>{
-  console.log('sda')
-  let usersData = ['nodemailtesting1303@gmail.com','deepakbehki1611@gmail.com']//await dbData()
-  usersData.forEach(function(to, i , array){
+cron.schedule('0 0 0 * * *',async ()=>{
+  let usersData = await dbData()
+  usersData.forEach(function(user, i , array){
     let mailOptions = {
       from: 'nodemailtesting1303@gmail.com',
       subject: 'Birthday Reminder Mail',
-      text: `Your Friends bday in few hours `,//`Your Friends ${friendsName} bday in ${hours} hours `
+      text: `HURRAY!!! Its ${user.name} bday in 24 hours `,
+      to:'nodemailtesting1303@gmail.com',
     };
-    mailOptions.to = to
     transporter.sendMail(mailOptions, function(error, info){
       if (error) {
         console.log(error);
@@ -79,6 +78,9 @@ cron.schedule(' * * * * *',async ()=>{
       }
     });
   })
+}, {
+  scheduled: true,
+  timezone: "Asia/Kolkata"
 })
 
 function dbData(){
@@ -89,9 +91,9 @@ function dbData(){
       .then((fetchedData)=>{
         for (let i = 0; i < fetchedData.length; i++) {
           const element = fetchedData[i];
-          const todaysDate = +new Date().setHours(0,0,0,0) - 8.64e7
-          if(element.dateOfBirth && (todaysDate == element.dateOfBirth) ){
-            mailList.push(element.email)
+          const yesterDay = +new Date().setHours(0,0,0,0) - 8.64e7
+          if(element.dateOfBirth && (element.dateOfBirth >= yesterDay) ){
+            mailList.push(element)
           }
         }
         resolve(mailList)
